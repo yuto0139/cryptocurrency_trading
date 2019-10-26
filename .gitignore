@@ -1,2 +1,5 @@
 # Ignore all logfiles and tempfiles.
-/log/*.log
+*.log
+
+# Ignore rails_config local files.
+config.ini
