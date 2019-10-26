@@ -1,9 +1,0 @@
-2019/10/20 20:59:58 main.go:11: test
-2019/10/20 21:05:31 main.go:11: test
-2019/10/26 20:16:01 bitflyer.go:58: action=doRequest endpoint=https://api.bitflyer.com/v1/me/getbalance
-2019/10/26 20:16:01 bitflyer.go:34: 1572088561
-2019/10/26 20:16:01 bitflyer.go:95: url=me/getbalance resp={"status":-500,"error_message":"Invalid signature","data":null}
-2019/10/26 20:16:01 bitflyer.go:103: action=GetBalance err=json: cannot unmarshal object into Go value of type []bitflyer.Balance
-2019/10/26 20:40:04 bitflyer.go:58: action=doRequest endpoint=https://api.bitflyer.com/v1/me/getbalance
-2019/10/26 20:40:04 bitflyer.go:34: 1572090004
-2019/10/26 20:40:07 bitflyer.go:95: url=me/getbalance resp=[{"currency_code":"JPY","amount":0.0,"available":0.0},{"currency_code":"BTC","amount":0.00007058,"available":0.000070580000},{"currency_code":"BCH","amount":0.0,"available":0.0},{"currency_code":"ETH","amount":0.00000342,"available":0.000003420000},{"currency_code":"ETC","amount":0.0,"available":0.0},{"currency_code":"LTC","amount":0.0,"available":0.0},{"currency_code":"MONA","amount":0.0,"available":0.0},{"currency_code":"LSK","amount":0.0,"available":0.0}]
