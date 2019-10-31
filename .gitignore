@@ -3,3 +3,6 @@
 
 # Ignore rails_config local files.
 config.ini
+
+# Ignore the default SQLite database.
+stockdata.sql
