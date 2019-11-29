@@ -13,16 +13,11 @@ import (
 	"cryptocurrency_trading/config"
 )
 
-var templates = template.Must(template.ParseFiles("app/views/google.html"))
+var templates = template.Must(template.ParseFiles("app/views/chart.html"))
 
 // viewChartHandler ...
 func viewChartHandler(w http.ResponseWriter, r *http.Request) {
-	limit := 100
-	duration := "1m"
-	durationTime := config.Config.Durations[duration]
-	df, _ := models.GetAllCandle(config.Config.ProductCode, durationTime, limit)
-
-	err := templates.ExecuteTemplate(w, "google.html", df.Candles)
+	err := templates.ExecuteTemplate(w, "chart.html", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
