@@ -12,12 +12,19 @@ type DataFrameCandle struct {
 	Duration    time.Duration `json:"duration"`
 	Candles     []Candle      `json:"candles"`
 	Smas        []Sma         `json:"smas, omitempty"`
+	Emas        []Ema         `json:"emas,omitempty"`
 }
 
 // Sma ...
 type Sma struct {
 	Period int       `json:"period, omitempty"`
 	Value  []float64 `json:"values, omitempty"`
+}
+
+// Ema ...
+type Ema struct {
+	Period int       `json:"period,omitempty"`
+	Values []float64 `json:"values,omitempty"`
 }
 
 // Times ...
@@ -80,6 +87,18 @@ func (df *DataFrameCandle) AddSma(period int) bool {
 		df.Smas = append(df.Smas, Sma{
 			Period: period,
 			Value:  talib.Sma(df.Closes(), period),
+		})
+		return true
+	}
+	return false
+}
+
+// AddEma ...
+func (df *DataFrameCandle) AddEma(period int) bool {
+	if len(df.Candles) > period {
+		df.Emas = append(df.Emas, Ema{
+			Period: period,
+			Values: talib.Ema(df.Closes(), period),
 		})
 		return true
 	}
