@@ -17,6 +17,8 @@ type DataFrameCandle struct {
 	BBands        *BBands        `json:"bbands,omitempty"`
 	IchimokuCloud *IchimokuCloud `json:"ichimoku,omitempty"`
 	Rsi           *Rsi           `json:"rsi,omitempty"`
+	Macd          *Macd          `json:"macd,omitempty"`
+	Hvs           []Hv           `json:"hvs,omitempty"`
 }
 
 // Sma ...
@@ -51,6 +53,22 @@ type IchimokuCloud struct {
 
 // Rsi ...
 type Rsi struct {
+	Period int       `json:"period,omitempty"`
+	Values []float64 `json:"values,omitempty"`
+}
+
+// Macd ...
+type Macd struct {
+	FastPeriod   int       `json:"fast_period,omitempty"`
+	SlowPeriod   int       `json:"slow_period,omitempty"`
+	SignalPeriod int       `json:"signal_period,omitempty"`
+	Macd         []float64 `json:"macd,omitempty"`
+	MacdSignal   []float64 `json:"macd_signal,omitempty"`
+	MacdHist     []float64 `json:"macd_hist,omitempty"`
+}
+
+// Hv ...
+type Hv struct {
 	Period int       `json:"period,omitempty"`
 	Values []float64 `json:"values,omitempty"`
 }
@@ -174,6 +192,35 @@ func (df *DataFrameCandle) AddRsi(period int) bool {
 			Period: period,
 			Values: values,
 		}
+		return true
+	}
+	return false
+}
+
+// AddMacd ...
+func (df *DataFrameCandle) AddMacd(inFastPeriod, inSlowPeriod, inSignalPeriod int) bool {
+	if len(df.Candles) > 1 {
+		outMACD, outMACDSignal, outMACDHist := talib.Macd(df.Closes(), inFastPeriod, inSlowPeriod, inSignalPeriod)
+		df.Macd = &Macd{
+			FastPeriod:   inFastPeriod,
+			SlowPeriod:   inSlowPeriod,
+			SignalPeriod: inSignalPeriod,
+			Macd:         outMACD,
+			MacdSignal:   outMACDSignal,
+			MacdHist:     outMACDHist,
+		}
+		return true
+	}
+	return false
+}
+
+// AddHv ...
+func (df *DataFrameCandle) AddHv(period int) bool {
+	if len(df.Candles) >= period {
+		df.Hvs = append(df.Hvs, Hv{
+			Period: period,
+			Values: tradingalgo.Hv(df.Closes(), period),
+		})
 		return true
 	}
 	return false
