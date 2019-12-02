@@ -170,7 +170,7 @@ func (s *SignalEvents) Profit() float64 {
 			total -= signalEvent.Price * signalEvent.Size
 			isHolding = true
 		}
-		if signalEvent.Side == "SEL" {
+		if signalEvent.Side == "SELL" {
 			total += signalEvent.Price * signalEvent.Size
 			isHolding = false
 			beforeSell = total
