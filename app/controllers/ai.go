@@ -129,7 +129,7 @@ func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderC
 	}
 	childOrderAcceptanceID = resp.ChildOrderAcceptanceID
 
-	// ToDo
+	isOrderCompleted = ai.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
 	return childOrderAcceptanceID, isOrderCompleted
 }
 
@@ -171,7 +171,7 @@ func (ai *AI) Sell(candle models.Candle) (childOrderAcceptanceID string, isOrder
 	}
 	childOrderAcceptanceID = resp.ChildOrderAcceptanceID
 
-	// ToDo
+	isOrderCompleted = ai.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
 	return childOrderAcceptanceID, isOrderCompleted
 }
 
@@ -314,4 +314,48 @@ func (ai *AI) AdjustSize(size float64) float64 {
 	fee := size * APIFeePercent
 	size = size - fee
 	return math.Floor(size*10000) / 10000
+}
+
+// WaitUntilOrderComplete ...
+func (ai *AI) WaitUntilOrderComplete(childOrderAcceptanceID string, executeTime time.Time) bool {
+	params := map[string]string{
+		"product_code":              ai.ProductCode,
+		"child_order_acceptance_id": childOrderAcceptanceID,
+	}
+	expire := time.After(time.Minute + (20 * time.Second))
+	interval := time.Tick(15 * time.Second)
+	return func() bool {
+		for {
+			select {
+			case <-expire:
+				return false
+			case <-interval:
+				listOrders, err := ai.API.ListOrder(params)
+				if err != nil {
+					return false
+				}
+				if len(listOrders) == 0 {
+					return false
+				}
+				order := listOrders[0]
+				if order.ChildOrderState == "COMPLETED" {
+					if order.Side == "BUY" {
+						couldBuy := ai.SignalEvents.Buy(ai.ProductCode, executeTime, order.AveragePrice, order.Size, true)
+						if !couldBuy {
+							log.Printf("status=buy childOrderAcceptanceID=%s order=%+v", childOrderAcceptanceID, order)
+						}
+						return couldBuy
+					}
+					if order.Side == "SELL" {
+						couldSell := ai.SignalEvents.Sell(ai.ProductCode, executeTime, order.AveragePrice, order.Size, true)
+						if !couldSell {
+							log.Printf("status=sell childOrderAcceptanceID=%s order=%+v", childOrderAcceptanceID, order)
+						}
+						return couldSell
+					}
+					return false
+				}
+			}
+		}
+	}()
 }
