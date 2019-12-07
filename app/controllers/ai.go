@@ -190,5 +190,22 @@ func (ai *AI) Trade() {
 				sellPoint++
 			}
 		}
+
+		if buyPoint > 0 {
+			_, isOrderCompleted := ai.Buy(df.Candles[i])
+			if !isOrderCompleted {
+				continue
+			}
+			ai.StopLimit = df.Candles[i].Close * ai.StopLimitPercent
+		}
+
+		if sellPoint > 0 || ai.StopLimit > df.Candles[i].Close {
+			_, isOrderCompleted := ai.Sell(df.Candles[i])
+			if !isOrderCompleted {
+				continue
+			}
+			ai.StopLimit = 0.0
+			ai.UpdateOptimizeParams()
+		}
 	}
 }
