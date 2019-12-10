@@ -35,7 +35,7 @@
                 interval: 1000 * 3
             },
             candlestick:{
-                product_code: 'BTC_USD',
+                product_code: 'BTC_JPY',
                 duration: '1m',
                 limit: 365,
                 numViews: 5,
@@ -139,12 +139,17 @@
             var chartDiv = document.getElementById('chart_div');
             var charts = [];
             var dashboard = new google.visualization.Dashboard(chartDiv);
+            var formatDate = new google.visualization.DateFormat({
+                pattern: 'MM/dd HH:00'
+              });
             var mainChart = new google.visualization.ChartWrapper({
                 chartType: 'ComboChart',
                 containerId: 'chart_div',
                 options: {
-                    hAxis: {'slantedText': false},
-                    legend: {'position': 'none'},
+                    title : 'Bitcoin Price Chart (BTC/JPY)',
+                    vAxis: { title: 'Bitcoin Price' },
+                    hAxis: { slantedText: false, title: 'Date' },
+                    legend: { position: 'none' },
                     candlestick: {
                         fallingColor: { strokeWidth: 0, fill: '#a52714' },
                         risingColor: { strokeWidth: 0, fill: '#0f9d58' }
@@ -156,13 +161,11 @@
                     columns: [
                         {
                             calc: function(d, rowIndex) {
-                                return d.getFormattedValue(rowIndex, 0);
+                                return formatDate.formatValue(d.getValue(rowIndex, 0));
                             },
                             type: 'string'
-
                         }, 1, 2, 3, 4
                     ]
-
                 }
 
             });
@@ -504,8 +507,8 @@
                     dataTable.addColumn({type:'string', role:'annotation'});
 
                     if (data['events']['profit'] != undefined) {
-                        profit = "$" + String(Math.round(data['events']['profit'] * 100) / 100);
-                        $('#profit').html("Change:" + profit);
+                        profit = "¥" + String(Math.round(data['events']['profit']).toLocaleString());
+                        $('#profit').html("Profit: " + profit);
                     }
                 }
 
