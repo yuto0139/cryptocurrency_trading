@@ -7,7 +7,11 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+const (
+	dbName = "gotrading_test"
 )
 
 const (
@@ -28,25 +32,43 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	cmd := fmt.Sprintf(`
-        CREATE TABLE IF NOT EXISTS %s (
-            time DATETIME PRIMARY KEY NOT NULL,
-            product_code STRING,
-            side STRING,
-            price FLOAT,
-            size FLOAT)`, tableNameSignalEvents)
-	DbConnection.Exec(cmd)
+
+	createDb := fmt.Sprintf(`CREATE DATABASE IF NOT EXISTS ` + dbName)
+	_, err = DbConnection.Exec(createDb)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	useDb := fmt.Sprintf(`USE ` + dbName)
+	_, err = DbConnection.Exec(useDb)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	createTable := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
+	          time DATETIME PRIMARY KEY NOT NULL,
+	          product_code VARCHAR(255),
+	          side VARCHAR(255),
+	          price FLOAT,
+	          size FLOAT)`, tableNameSignalEvents)
+	_, err = DbConnection.Exec(createTable)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	for _, duration := range config.Config.Durations {
 		tableName := GetCandleTableName(config.Config.ProductCode, duration)
 		c := fmt.Sprintf(`
-            CREATE TABLE IF NOT EXISTS %s (
-            time DATETIME PRIMARY KEY NOT NULL,
-            open FLOAT,
-            close FLOAT,
-            high FLOAT,
-            low open FLOAT,
-			volume FLOAT)`, tableName)
-		DbConnection.Exec(c)
+	          CREATE TABLE IF NOT EXISTS %s (
+	          time DATETIME PRIMARY KEY NOT NULL,
+	          open FLOAT,
+	          close FLOAT,
+	          high FLOAT,
+	          low FLOAT,
+						volume FLOAT)`, tableName)
+		_, err = DbConnection.Exec(c)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
