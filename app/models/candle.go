@@ -3,7 +3,6 @@ package models
 import (
 	"cryptocurrency_trading/bitflyer"
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -41,11 +40,7 @@ func (c *Candle) TableName() string {
 // Create ... キャンドルスティックを作成
 func (c *Candle) Create() error {
 	cmd := fmt.Sprintf("INSERT INTO %s (time, open, close, high, low, volume) VALUES (?, ?, ?, ?, ?, ?)", c.TableName())
-	stmtIns, err := DbConnection.Prepare(cmd)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	_, err = stmtIns.Exec(c.Time.Format(time.RFC3339), c.Open, c.Close, c.High, c.Low, c.Volume)
+	_, err := DbConnection.Exec(cmd, c.Time.Format(time.RFC3339), c.Open, c.Close, c.High, c.Low, c.Volume)
 	if err != nil {
 		return err
 	}
@@ -55,11 +50,7 @@ func (c *Candle) Create() error {
 // Save ... キャンドルスティックをアップデート
 func (c *Candle) Save() error {
 	cmd := fmt.Sprintf("UPDATE %s SET open = ?, close = ?, high = ?, low = ?, volume = ? WHERE time = ?", c.TableName())
-	stmtIns, err := DbConnection.Prepare(cmd)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	_, err = stmtIns.Exec(cmd, c.Open, c.Close, c.High, c.Low, c.Volume, c.Time.Format(time.RFC3339))
+	_, err := DbConnection.Exec(cmd, c.Open, c.Close, c.High, c.Low, c.Volume, c.Time.Format(time.RFC3339))
 	if err != nil {
 		return err
 	}
@@ -70,13 +61,9 @@ func (c *Candle) Save() error {
 func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *Candle {
 	tableName := GetCandleTableName(productCode, duration)
 	cmd := fmt.Sprintf("SELECT time, open, close, high, low, volume FROM  %s WHERE time = ?", tableName)
-	stmtOut, err := DbConnection.Prepare(cmd)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	row := stmtOut.QueryRow(dateTime.Format(time.RFC3339))
+	row := DbConnection.QueryRow(cmd, dateTime.Format(time.RFC3339))
 	var candle Candle
-	err = row.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
+	err := row.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
 	if err != nil {
 		return nil
 	}

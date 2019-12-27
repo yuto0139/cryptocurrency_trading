@@ -49,7 +49,7 @@ func init() {
 	          close FLOAT,
 	          high FLOAT,
 	          low FLOAT,
-						volume FLOAT)`, tableName)
+	          volume FLOAT)`, tableName)
 		_, err = DbConnection.Exec(c)
 		if err != nil {
 			log.Fatalln(err)
