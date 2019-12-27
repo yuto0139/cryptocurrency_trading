@@ -188,7 +188,6 @@ func (ai *AI) Trade() {
 		return
 	}
 	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.PastPeriod)
-	lenCandles := len(df.Candles)
 
 	var emaValues1 []float64
 	var emaValues2 []float64
@@ -218,6 +217,7 @@ func (ai *AI) Trade() {
 		rsiValues = talib.Rsi(df.Closes(), params.RsiPeriod)
 	}
 
+	lenCandles := len(df.Candles)
 	for i := 1; i < lenCandles; i++ {
 		buyPoint, sellPoint := 0, 0
 		if params.EmaEnable && params.EmaPeriod1 <= i && params.EmaPeriod2 <= i {

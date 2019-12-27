@@ -11,10 +11,6 @@ import (
 )
 
 const (
-	dbName = "gotrading_test"
-)
-
-const (
 	tableNameSignalEvents = "signal_events"
 )
 
@@ -29,18 +25,6 @@ func GetCandleTableName(productCode string, duration time.Duration) string {
 func init() {
 	var err error
 	DbConnection, err = sql.Open(config.Config.SQLDriver, config.Config.DbName)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	createDb := fmt.Sprintf(`CREATE DATABASE IF NOT EXISTS ` + dbName)
-	_, err = DbConnection.Exec(createDb)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	useDb := fmt.Sprintf(`USE ` + dbName)
-	_, err = DbConnection.Exec(useDb)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -65,7 +49,7 @@ func init() {
 	          close FLOAT,
 	          high FLOAT,
 	          low FLOAT,
-						volume FLOAT)`, tableName)
+	          volume FLOAT)`, tableName)
 		_, err = DbConnection.Exec(c)
 		if err != nil {
 			log.Fatalln(err)
