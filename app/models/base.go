@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -23,8 +24,21 @@ func GetCandleTableName(productCode string, duration time.Duration) string {
 }
 
 func init() {
+	var (
+		connectionName = os.Getenv("CLOUDSQL_CONNECTION_NAME")
+		user           = os.Getenv("CLOUDSQL_USER")
+		password       = os.Getenv("CLOUDSQL_PASSWORD")
+		database       = os.Getenv("CLOUDSQL_DATABASE")
+		socket         = os.Getenv("CLOUDSQL_SOCKET_PREFIX")
+	)
+	if socket == "" {
+		socket = "/cloudsql"
+	}
+
+	dbURI := fmt.Sprintf("%s:%s@unix(%s/%s)/%s?parseTime=true", user, password, socket, connectionName, database)
+
 	var err error
-	DbConnection, err = sql.Open(config.Config.SQLDriver, config.Config.DbName)
+	DbConnection, err = sql.Open(config.Config.SQLDriver, dbURI)
 	if err != nil {
 		log.Fatalln(err)
 	}

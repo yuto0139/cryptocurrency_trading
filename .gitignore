@@ -1,8 +1,11 @@
 # Ignore all logfiles and tempfiles.
 *.log
 
-# Ignore rails_config local files.
+# Ignore basic config files.
 config.ini
 
 # Ignore the default SQLite database.
 stockdata.sql
+
+# Ignore Cloud SQL config files.
+secret.yml

@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 
@@ -13,7 +14,7 @@ import (
 	"cryptocurrency_trading/config"
 )
 
-var templates = template.Must(template.ParseFiles("app/views/chart.html"))
+var templates = template.Must(template.ParseFiles("templates/chart.html"))
 
 // viewChartHandler ...
 func viewChartHandler(w http.ResponseWriter, r *http.Request) {
@@ -211,6 +212,14 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 // StartWebServer ...
 func StartWebServer() error {
 	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
-	http.HandleFunc("/chart/", viewChartHandler)
-	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.Port), nil)
+	http.HandleFunc("/", viewChartHandler)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8087"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }
