@@ -86,9 +86,9 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 
 // Balance ...
 type Balance struct {
-	CurrentCode string  `json: "currency_code"`
-	Amount      float64 `json: "amount"`
-	Available   float64 `json: "available"`
+	CurrentCode string  `json:"currency_code"`
+	Amount      float64 `json:"amount"`
+	Available   float64 `json:"available"`
 }
 
 // GetBalance ...

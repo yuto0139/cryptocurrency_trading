@@ -8,4 +8,4 @@ config.ini
 stockdata.sql
 
 # Ignore Cloud SQL config files.
-secret.yml
+go-app/secret.yml
