@@ -508,7 +508,8 @@
 
                     if (data['events']['profit'] != undefined) {
                         profit = "¥" + String(Math.round(data['events']['profit']).toLocaleString());
-                        $('#profit').html("想定利益: " + profit);
+                        $('#profit').html("予想利益： " + profit);
+                        $('#indicators').html("最適な指標： " + "EMA Rsi");
                     }
                 }
 
@@ -854,6 +855,7 @@
                 } else {
                     config.events.enable = false;
                     $('#profit').html("");
+                    $('#indicators').html("");
                 }
                 send();
             });
@@ -924,7 +926,7 @@
   3. 自動取引のテストができます。
 </div>
 <div>
-    テスト <input id="inputEvents" type="checkbox"> <div id="profit"></div>
+    テスト <input id="inputEvents" type="checkbox"> <div id="profit"></div> <div id="indicators"></div>
     ＊ 現相場にてバックテストで算出した最適な指標を用いて取引した場合の予想利益を表示
 </div>
 <br>
